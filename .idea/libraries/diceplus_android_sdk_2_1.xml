@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="diceplus_android_sdk_2.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/diceplus_android_sdk_2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

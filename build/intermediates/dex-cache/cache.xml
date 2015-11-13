@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/caseylouisee/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.0.1/support-annotations-23.0.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1fce89a6428c51467090d7f424e4c9c3dbd55f7e">
+        <dex dex="/Users/caseylouisee/Google Drive/3rdYearProject/AndroidApplications/MonopolyVersion1/app/build/intermediates/pre-dexed/debug/support-annotations-23.0.1-7f5ff3786d3af9ad31b733143ba14d7859398ac4.jar" />
+    </item>
+    <item
+        jar="/Users/caseylouisee/Google Drive/3rdYearProject/AndroidApplications/MonopolyVersion1/app/build/intermediates/exploded-aar/com.android.support/design/23.0.1/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="e5c61a3169221a89654ffcaaed47bba51cf071ad">
+        <dex dex="/Users/caseylouisee/Google Drive/3rdYearProject/AndroidApplications/MonopolyVersion1/app/build/intermediates/pre-dexed/debug/classes-7986630cd5f208882639b82423698b37e2f1504d.jar" />
+    </item>
+    <item
+        jar="/Users/caseylouisee/Google Drive/3rdYearProject/AndroidApplications/MonopolyVersion1/app/libs/diceplus_android_sdk_2.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="6058e69c56836e6827dc5255bde0b43277cde14c">
+        <dex dex="/Users/caseylouisee/Google Drive/3rdYearProject/AndroidApplications/MonopolyVersion1/app/build/intermediates/pre-dexed/debug/diceplus_android_sdk_2.1-e1f2ef1f133ab3887d7672c49d36d34af51bce0b.jar" />
+    </item>
+    <item
+        jar="/Users/caseylouisee/Google Drive/3rdYearProject/AndroidApplications/MonopolyVersion1/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.0.1/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="c31e21b53ff2f74664e498248d01453a32e32d48">
+        <dex dex="/Users/caseylouisee/Google Drive/3rdYearProject/AndroidApplications/MonopolyVersion1/app/build/intermediates/pre-dexed/debug/classes-8cf0df6fe76cdffa21c5e514e1d5c8791dfd7628.jar" />
+    </item>
+    <item
+        jar="/Users/caseylouisee/Google Drive/3rdYearProject/AndroidApplications/MonopolyVersion1/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.0.1/jars/libs/internal_impl-23.0.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="aa92916125166649d8ad4ba3940c3dd7515596d3">
+        <dex dex="/Users/caseylouisee/Google Drive/3rdYearProject/AndroidApplications/MonopolyVersion1/app/build/intermediates/pre-dexed/debug/internal_impl-23.0.1-30079b4ca5343534af7bf7c609bbde9085103fc2.jar" />
+    </item>
+    <item
+        jar="/Users/caseylouisee/Google Drive/3rdYearProject/AndroidApplications/MonopolyVersion1/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.1/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="d86429b0f0b3f3cafbeb78dda1b9d89119ccb05d">
+        <dex dex="/Users/caseylouisee/Google Drive/3rdYearProject/AndroidApplications/MonopolyVersion1/app/build/intermediates/pre-dexed/debug/classes-af1627bd2bba98df8131920c013f2ea68ff6ca76.jar" />
+    </item>
+
+</items>
