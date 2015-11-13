@@ -35,30 +35,30 @@ public class MainActivity extends AppCompatActivity {
     int numPlayers;
     Board board;
 
-    TextToSpeech textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-        @Override
-        public void onInit(int status) {
-            if (status == TextToSpeech.SUCCESS) {
-                int result = textToSpeech.setLanguage(Locale.US);
-                if (result == TextToSpeech.LANG_MISSING_DATA
-                        || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Log.e("error", "This Language is not supported");
-                } else {
-                    Log.d("onInit", "TextToSpeech initialized");
-                }
-            } else {
-                Log.e("error", "Initilization Failed!");
-            }
-        }
-    });
-
-    private void convertTextToSpeech(String text) {
-        if (null == text || "".equals(text)) {
-            text = "Please give some input.";
-        }
-        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "speech");
-        //textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-    }
+//    TextToSpeech textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+//        @Override
+//        public void onInit(int status) {
+//            if (status == TextToSpeech.SUCCESS) {
+//                int result = textToSpeech.setLanguage(Locale.US);
+//                if (result == TextToSpeech.LANG_MISSING_DATA
+//                        || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+//                    Log.e("error", "This Language is not supported");
+//                } else {
+//                    Log.d("onInit", "TextToSpeech initialized");
+//                }
+//            } else {
+//                Log.e("error", "Initilization Failed!");
+//            }
+//        }
+//    });
+//
+//    private void convertTextToSpeech(String text) {
+//        if (null == text || "".equals(text)) {
+//            text = "Please give some input.";
+//        }
+//        //textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "speech");
+//        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+//    }
 
 
     DiceScanningListener scanningListener = new DiceScanningListener() {
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     currentTurn++;
-                    convertTextToSpeech(players.get(currentTurn) + "please roll the Dice");
+                    //convertTextToSpeech(players.get(currentTurn) + "please roll the Dice");
                 }
             });
         }
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
 
         String method = "game";
         board = new Board();
-        players = new ArrayList<Player>();
+        players = new ArrayList<>();
         currentTurn = 0;
 
         Player player1 = new Player("Casey");
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
 
         currentPosition = (TextView) findViewById(R.id.currentPosition);
         currentPosition.setText("Current Position: " + pos + ", " + board.getSquare(pos).getName());
-        convertTextToSpeech(players.get(currentTurn) + "please roll the Dice");
+        //convertTextToSpeech(players.get(currentTurn) + "please roll the Dice");
 
 
         // Initiating
