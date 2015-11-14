@@ -37,35 +37,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     ArrayList<Player> players;
     int numPlayers;
     Board board;
-
     private TextToSpeech tts;
 
-
-//    TextToSpeech textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-//        @Override
-//        public void onInit(int status) {
-//            if (status == TextToSpeech.SUCCESS) {
-//                int result = textToSpeech.setLanguage(Locale.US);
-//                if (result == TextToSpeech.LANG_MISSING_DATA
-//                        || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-//                    Log.e("error", "This Language is not supported");
-//                } else {
-//                    Log.d("onInit", "TextToSpeech initialized");
-//                }
-//            } else {
-//                Log.e("error", "Initilization Failed!");
-//            }
-//        }
-//    });
-//
     private void convertTextToSpeech(String text) {
         if (null == text || "".equals(text)) {
             text = "Please give some input.";
         }
-        //textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "speech");
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        tts.speak(text, TextToSpeech.QUEUE_ADD, null);
     }
-
 
     DiceScanningListener scanningListener = new DiceScanningListener() {
         @Override
@@ -151,7 +130,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     Log.d(method, "Current Position:" + pos + ", " + board.getSquare(pos).getName());
 
                     currentPosition = (TextView) findViewById(R.id.currentPosition);
-                    currentPosition.setText("Current Position: " + pos + ", " + board.getSquare(pos).getName());
+                    currentPosition.setText("Position before dice roll " + pos + ", " +
+                            board.getSquare(pos).getName());
+                    convertTextToSpeech("Position before dice roll" + pos +
+                            board.getSquare(pos).getName());
 
                     int newPos = pos+face;
                     if(newPos >= 40){
@@ -159,10 +141,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     }
 
                     current.setCurrentPosition(newPos);
+                    convertTextToSpeech("You rolled a" + face);
 
                     updatedPosition = (TextView) findViewById(R.id.updatedPosition);
-                    updatedPosition.setText("Updated Position:" + newPos + ", " + board.getSquare(newPos).getName());
-
+                    updatedPosition.setText("Updated Position:" + newPos + ", " +
+                            board.getSquare(newPos).getName());
+                    convertTextToSpeech("Position after dice roll" + newPos +
+                            board.getSquare(newPos).getName());
 
                     locationType = (TextView) findViewById(R.id.locationType);
 
@@ -181,7 +166,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     if(currentTurn >= numPlayers){
                         currentTurn = 0;
                     }
-                    convertTextToSpeech((players.get(currentTurn)).getName() + "please roll the Dice");
+                    convertTextToSpeech((players.get(currentTurn)).getName() +
+                            "please roll the Dice");
                 }
             });
         }
@@ -247,7 +233,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         currentPosition.setText("Current Position: " + pos + ", " + board.getSquare(pos).getName());
         //convertTextToSpeech(players.get(currentTurn) + "please roll the Dice");
 
-
         // Initiating
         BluetoothManipulator.initiate(this);
         DiceController.initiate(developerKey);
@@ -261,18 +246,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     }
 
-//    @Override
-//    public void onClick(View v) {
-//        if (tts!=null) {
-//            String text = ((EditText)findViewById(R.id.editText1)).getText().toString();
-//            if (text!=null) {
-//                if (!tts.isSpeaking()) {
-//                    tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-//                }
-//            }
-//        }
-//    }
-
     @Override
     public void onInit(int code) {
         if (code==TextToSpeech.SUCCESS) {
@@ -283,7 +256,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     Toast.LENGTH_SHORT).show();
         }
     }
-
 
     @Override
     protected void onDestroy() {
