@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -18,7 +21,7 @@ import us.dicepl.android.sdk.DiceScanningListener;
 import us.dicepl.android.sdk.Die;
 import us.dicepl.android.sdk.responsedata.RollData;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
     public static final int[] developerKey = new int[]
             {0x5e, 0x77, 0x68, 0xd3, 0xc6, 0xa0, 0x17, 0x0a};
@@ -34,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Player> players;
     int numPlayers;
     Board board;
+
+    private TextToSpeech tts;
+
 
 //    TextToSpeech textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
 //        @Override
@@ -52,13 +58,13 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //    });
 //
-//    private void convertTextToSpeech(String text) {
-//        if (null == text || "".equals(text)) {
-//            text = "Please give some input.";
-//        }
-//        //textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "speech");
-//        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-//    }
+    private void convertTextToSpeech(String text) {
+        if (null == text || "".equals(text)) {
+            text = "Please give some input.";
+        }
+        //textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "speech");
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+    }
 
 
     DiceScanningListener scanningListener = new DiceScanningListener() {
@@ -172,7 +178,10 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     currentTurn++;
-                    //convertTextToSpeech(players.get(currentTurn) + "please roll the Dice");
+                    if(currentTurn >= numPlayers){
+                        currentTurn = 0;
+                    }
+                    convertTextToSpeech((players.get(currentTurn)).getName() + "please roll the Dice");
                 }
             });
         }
@@ -206,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        tts = new TextToSpeech(this, this);
     }
 
     public void game() {
@@ -249,5 +259,38 @@ public class MainActivity extends AppCompatActivity {
 
         BluetoothManipulator.startScan();
 
+    }
+
+//    @Override
+//    public void onClick(View v) {
+//        if (tts!=null) {
+//            String text = ((EditText)findViewById(R.id.editText1)).getText().toString();
+//            if (text!=null) {
+//                if (!tts.isSpeaking()) {
+//                    tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+//                }
+//            }
+//        }
+//    }
+
+    @Override
+    public void onInit(int code) {
+        if (code==TextToSpeech.SUCCESS) {
+            tts.setLanguage(Locale.getDefault());
+        } else {
+            tts = null;
+            Toast.makeText(this, "Failed to initialize TTS engine.",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        if (tts!=null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
     }
 }
