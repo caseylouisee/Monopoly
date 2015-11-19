@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Scanner;
 
 import us.dicepl.android.sdk.BluetoothManipulator;
 import us.dicepl.android.sdk.DiceConnectionListener;
@@ -20,6 +21,8 @@ import us.dicepl.android.sdk.DiceResponseListener;
 import us.dicepl.android.sdk.DiceScanningListener;
 import us.dicepl.android.sdk.Die;
 import us.dicepl.android.sdk.responsedata.RollData;
+
+import static android.speech.SpeechRecognizer.createSpeechRecognizer;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
@@ -125,8 +128,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     player = (TextView) findViewById(R.id.player);
                     player.setText(current.getName());
                     Log.d(method, "*****IT IS " + current.getName().toUpperCase() + "'S TURN*****");
-
-                    Log.d(method, "Name:" + current.getName());
                     Log.d(method, "Current Position:" + pos + ", " + board.getSquare(pos).getName());
 
                     currentPosition = (TextView) findViewById(R.id.currentPosition);
@@ -155,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     //String posType = board.getSquare(newPos).getClass().getName();
                     if(location instanceof PropertySquare){
                         locationType.setText("Landed on property");
-                        //buyProperty(current, location);
+                        buyProperty(current, location);
                     } else if(location instanceof CardSquare){
                         locationType.setText("Take a Card");
                     } else if(location instanceof SpecialSquare){
@@ -225,13 +226,11 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         player = (TextView) findViewById(R.id.player);
         player.setText(current.getName());
         Log.d(method, "*****IT IS " + current.getName().toUpperCase() + "'S TURN*****");
-
-        Log.d(method, "Name:" + current.getName());
         Log.d(method, "Current Position:" + pos + ", " + board.getSquare(pos).getName());
 
         currentPosition = (TextView) findViewById(R.id.currentPosition);
         currentPosition.setText("Current Position: " + pos + ", " + board.getSquare(pos).getName());
-        //convertTextToSpeech(players.get(currentTurn) + "please roll the Dice");
+        convertTextToSpeech("Start Game" + players.get(currentTurn) + "please roll the dice");
 
         // Initiating
         BluetoothManipulator.initiate(this);
@@ -244,6 +243,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         BluetoothManipulator.startScan();
 
+    }
+
+
+    private void buyProperty(Player current, Square location) {
+        int price = ((PropertySquare)location).getPrice();
+        convertTextToSpeech("Would you like to buy" + ((PropertySquare)location).getName() + "for"
+            + price);
+        // voice recognition feature needed here
+        //createSpeechRecognizer(this);
+//        if(in.equals("yes")){
+//            current.subtractMoney(price);
+//            ((PropertySquare)location).setOwnedBy(current.getName());
+//            System.out.println("You now own" + location.getName());
+//        }
     }
 
     @Override
