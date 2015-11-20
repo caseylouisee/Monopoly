@@ -54,4 +54,15 @@
         android:layout_below="@+id/updatedPosition"
         android:layout_centerHorizontal="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Recognized speech"
+        android:id="@+id/recognizedSpeech"
+        android:layout_below="@+id/locationType"
+        android:layout_alignRight="@+id/player"
+        android:layout_alignEnd="@+id/player"
+        android:layout_marginTop="52dp" />
+
 </RelativeLayout>

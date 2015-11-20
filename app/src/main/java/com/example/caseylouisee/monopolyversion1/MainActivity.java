@@ -1,6 +1,8 @@
 package com.example.caseylouisee.monopolyversion1;
 
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,7 +26,7 @@ import us.dicepl.android.sdk.responsedata.RollData;
 
 import static android.speech.SpeechRecognizer.createSpeechRecognizer;
 
-public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, RecognitionListener {
 
     public static final int[] developerKey = new int[]
             {0x5e, 0x77, 0x68, 0xd3, 0xc6, 0xa0, 0x17, 0x0a};
@@ -35,12 +37,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     TextView currentPosition;
     TextView updatedPosition;
     TextView locationType;
+    TextView recognizedSpeech;
 
     int currentTurn;
     ArrayList<Player> players;
     int numPlayers;
     Board board;
+
     private TextToSpeech tts;
+
+    private SpeechRecognizer speech = null;
 
     private void convertTextToSpeech(String text) {
         if (null == text || "".equals(text)) {
@@ -81,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         @Override
         public void onConnectionEstablished(Die die) {
             Log.d(TAG, "DICE+ Connected");
+            convertTextToSpeech("Dice+ Connected");
             DiceController.subscribeRolls(dicePlus);
         }
 
@@ -94,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         @Override
         public void onConnectionLost(Die die) {
             Log.d(TAG, "Connection lost");
+            convertTextToSpeech("Dice connection lost");
             dicePlus = null;
             BluetoothManipulator.startScan();
         }
@@ -159,21 +167,25 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         buyProperty(current, location);
                     } else if(location instanceof CardSquare){
                         locationType.setText("Take a Card");
+                        nextTurnRoll();
                     } else if(location instanceof SpecialSquare){
                         locationType.setText("Landed on special square");
+                        nextTurnRoll();
                     }
-
-                    currentTurn++;
-                    if(currentTurn >= numPlayers){
-                        currentTurn = 0;
-                    }
-                    convertTextToSpeech((players.get(currentTurn)).getName() +
-                            "please roll the Dice");
                 }
             });
         }
 
     };
+
+    private void nextTurnRoll() {
+        currentTurn++;
+        if(currentTurn >= numPlayers){
+            currentTurn = 0;
+        }
+        convertTextToSpeech(players.get(currentTurn).getName() + "please roll the dice");
+
+    }
 
     @Override
     protected void onResume() {
@@ -182,7 +194,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         game();
         //Game game = new Game();
-
     }
 
     @Override
@@ -230,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         currentPosition = (TextView) findViewById(R.id.currentPosition);
         currentPosition.setText("Current Position: " + pos + ", " + board.getSquare(pos).getName());
-        convertTextToSpeech("Start Game" + players.get(currentTurn) + "please roll the dice");
+        convertTextToSpeech("Start Game" + players.get(currentTurn).getName() + "please roll the dice");
 
         // Initiating
         BluetoothManipulator.initiate(this);
@@ -245,18 +256,29 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     }
 
-
     private void buyProperty(Player current, Square location) {
-        int price = ((PropertySquare)location).getPrice();
-        convertTextToSpeech("Would you like to buy" + ((PropertySquare)location).getName() + "for"
-            + price);
-        // voice recognition feature needed here
-        //createSpeechRecognizer(this);
-//        if(in.equals("yes")){
-//            current.subtractMoney(price);
-//            ((PropertySquare)location).setOwnedBy(current.getName());
-//            System.out.println("You now own" + location.getName());
-//        }
+        String method = "buyProperty";
+        recognizedSpeech = (TextView) findViewById(R.id.recognizedSpeech);
+        PropertySquare square = (PropertySquare)location;
+
+        recognizedSpeech.setText("");
+        if(square.getOwned()==true){
+            convertTextToSpeech(square.getOwnedBy() + "call rent");
+            nextTurnRoll();
+
+        } else {
+            int price = ((PropertySquare) location).getPrice();
+            convertTextToSpeech("Would you like to buy" + square.getName() + "for"
+                    + price);
+
+            while (tts.isSpeaking()) {
+                speech = null;
+            }
+            speech = SpeechRecognizer.createSpeechRecognizer(this);
+            speech.setRecognitionListener(this);
+            speech.startListening(getIntent());
+
+        }
     }
 
     @Override
@@ -277,5 +299,104 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             tts.shutdown();
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void onBeginningOfSpeech() {
+        Log.i("SRL", "onBeginningOfSpeech");
+    }
+
+    @Override
+    public void onBufferReceived(byte[] buffer) {
+        Log.i("SRL", "onBufferReceived: " + buffer);
+    }
+
+    @Override
+    public void onEndOfSpeech() {
+        Log.i("SRL", "onEndOfSpeech");
+    }
+
+    @Override
+    public void onError(int errorCode) {
+        String errorMessage = getErrorText(errorCode);
+        Log.d("SRL", "FAILED " + errorMessage);
+    }
+
+    @Override
+    public void onEvent(int arg0, Bundle arg1) {
+        Log.i("SRL", "onEvent");
+    }
+
+    @Override
+    public void onPartialResults(Bundle arg0) {
+        Log.i("SRL", "onPartialResults");
+    }
+
+    @Override
+    public void onReadyForSpeech(Bundle arg0) {
+        Log.i("SRL", "onReadyForSpeech");
+    }
+
+    @Override
+    public void onResults(Bundle results) {
+        recognizedSpeech = (TextView) findViewById(R.id.recognizedSpeech);
+        Log.i("SRL", "onResults");
+        ArrayList<String> matches = results
+                .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        String text = "";
+        for (String result : matches)
+            text += result + "\n";
+        recognizedSpeech.setText(text);
+
+        if (recognizedSpeech.getText().toString().contains("yes")) {
+            PropertySquare square = (PropertySquare) (board.getSquare(players.get(currentTurn).getCurrentPosition()));
+            players.get(currentTurn).subtractMoney(square.getPrice());
+            square.setOwnedBy(players.get(currentTurn).getName());
+            Log.d("buyProperty yes", square.getOwnedBy());
+            convertTextToSpeech("You now own" + square.getName());
+        }
+        nextTurnRoll();
+    }
+
+    @Override
+    public void onRmsChanged(float rmsdB) {
+        Log.i("SRL", "onRmsChanged: " + rmsdB);
+    }
+
+    public static String getErrorText(int errorCode) {
+        String message;
+        switch (errorCode) {
+            case SpeechRecognizer.ERROR_AUDIO:
+                message = "Audio recording error";
+                break;
+            case SpeechRecognizer.ERROR_CLIENT:
+                message = "Client side error";
+                break;
+            case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                message = "Insufficient permissions";
+                break;
+            case SpeechRecognizer.ERROR_NETWORK:
+                message = "Network error";
+                break;
+            case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                message = "Network timeout";
+                break;
+            case SpeechRecognizer.ERROR_NO_MATCH:
+                message = "No match";
+                break;
+            case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                message = "RecognitionService busy";
+                break;
+            case SpeechRecognizer.ERROR_SERVER:
+                message = "error from server";
+                break;
+            case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                message = "No speech input";
+                break;
+            default:
+                message = "Didn't understand, please try again.";
+                break;
+        }
+        return message;
     }
 }
