@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Random;
 import java.util.Scanner;
 
 import us.dicepl.android.sdk.BluetoothManipulator;
@@ -209,19 +210,23 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                             String locName = location.getName();
                             if(locName.equals("Go To Jail")){
                                 setJail(currentPlayer);
+                                nextTurnRoll();
                             } else if (locName.equals("Income Tax")){
                                 currentPlayer.subtractMoney(100);
                                 convertTextToSpeech("Income tax, 100 has been deducted from your funds");
                                 freeParking += 100;
+                                nextTurnRoll();
                             } else if (locName.equals("Jail")){
                                 convertTextToSpeech("Just visiting");
+                                nextTurnRoll();
                             } else if (locName.equals("Super Tax")){
                                 convertTextToSpeech("Super tax, 300 has been deducted from your funds");
                                 freeParking += 300;
+                                nextTurnRoll();
                             } else {
                                 convertTextToSpeech("Special square");
+                                nextTurnRoll();
                             }
-                            nextTurnRoll();
                         }
                     }
                 }
@@ -234,12 +239,43 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         currentPlayer.setJail(true);
     }
 
-    private void chance(Player currentPlayer){
+    private void chance(Player currentPlayer) {
+        Random rand = new Random();
+        int randomNum = rand.nextInt((3 - 1) + 1) + 1;
 
+        if(randomNum == 1){
+            convertTextToSpeech("Advance to Bond Street");
+            currentPlayer.setCurrentPosition(34);
+        }
+        if(randomNum == 2){
+            convertTextToSpeech("Unpaid charges. Go to jail");
+            setJail(currentPlayer);
+        }
+        if(randomNum == 3){
+            convertTextToSpeech("Build a rooftop swimming pool on your apartment, pay 300");
+            currentPlayer.subtractMoney(300);
+            freeParking += 300;
+        }
     }
 
     private void communityChest(Player currentPlayer){
+        Random rand = new Random();
+        int randomNum = rand.nextInt((3 - 1) + 1) + 1;
 
+        if(randomNum == 1){
+            convertTextToSpeech("Your new business takes off, collect 200");
+            currentPlayer.addMoney(200);
+        }
+        if(randomNum == 2){
+            convertTextToSpeech("Your friend hires your villa for a week, " +
+                    "collect 100 off the next player");
+            currentPlayer.addMoney(100);
+            players.get(currentTurn+1).subtractMoney(100);
+        }
+        if(randomNum == 3){
+            convertTextToSpeech("You recieve a tax rebate, collect 300");
+            currentPlayer.addMoney(300);
+        }
     }
 
     private void nextTurnRoll() {
