@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     player.setText(currentPlayer.getName());
                     Log.d(method, "*****IT IS " + currentPlayer.getName().toUpperCase() + "'S TURN*****");
                     Log.d(method, "Current Position:" + pos + ", " + board.getSquare(pos).getName());
+                    Log.d(method, "Current Funds: " + String.valueOf(currentPlayer.getMoney()));
 
                     currentPosition = (TextView) findViewById(R.id.currentPosition);
                     currentPosition.setText("Position before dice roll " + pos + ", " +
@@ -213,15 +214,21 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 nextTurnRoll();
                             } else if (locName.equals("Income Tax")){
                                 currentPlayer.subtractMoney(100);
-                                convertTextToSpeech("Income tax, 100 has been deducted from your funds");
+                                convertTextToSpeech("100 has been deducted from your funds");
+                                Log.d("income tax subtract 100", currentPlayer.getName() +
+                                        String.valueOf(currentPlayer.getMoney()));
                                 freeParking += 100;
+                                Log.d("income tax", "Free parking:" + String.valueOf(freeParking));
                                 nextTurnRoll();
                             } else if (locName.equals("Jail")){
                                 convertTextToSpeech("Just visiting");
                                 nextTurnRoll();
                             } else if (locName.equals("Super Tax")){
-                                convertTextToSpeech("Super tax, 300 has been deducted from your funds");
+                                convertTextToSpeech("300 has been deducted from your funds");
+                                Log.d("super tax subtract 300", currentPlayer.getName() +
+                                        String.valueOf(currentPlayer.getMoney()));
                                 freeParking += 300;
+                                Log.d("super tax", "Free parking:" + String.valueOf(freeParking));
                                 nextTurnRoll();
                             } else {
                                 convertTextToSpeech("Special square");
@@ -255,6 +262,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             convertTextToSpeech("Build a rooftop swimming pool on your apartment, pay 300");
             currentPlayer.subtractMoney(300);
             freeParking += 300;
+            Log.d("chance subtract 300", currentPlayer.getName() +
+                    String.valueOf(currentPlayer.getMoney()));
+            Log.d("chance free parking", String.valueOf(freeParking));
         }
     }
 
@@ -264,21 +274,42 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         if(randomNum == 1){
             convertTextToSpeech("Your new business takes off, collect 200");
+
+            Log.d("chance add 200", currentPlayer.getName() +
+                    String.valueOf(currentPlayer.getMoney()));
             currentPlayer.addMoney(200);
+            Log.d("chance add 200", currentPlayer.getName() +
+                    String.valueOf(currentPlayer.getMoney()));
         }
         if(randomNum == 2){
             convertTextToSpeech("Your friend hires your villa for a week, " +
                     "collect 100 off the next player");
+
+            Log.d("chance add 100", currentPlayer.getName() +
+                    String.valueOf(currentPlayer.getMoney()));
             currentPlayer.addMoney(100);
+            Log.d("chance add 100", currentPlayer.getName() +
+                    String.valueOf(currentPlayer.getMoney()));
+
+            Log.d("chance subtract 100", players.get(currentTurn+1).getName() +
+                    String.valueOf(players.get(currentTurn+1).getMoney()));
             players.get(currentTurn+1).subtractMoney(100);
+            Log.d("chance subtract 100", players.get(currentTurn + 1).getName() +
+                    String.valueOf(players.get(currentTurn + 1).getMoney()));
         }
         if(randomNum == 3){
             convertTextToSpeech("You recieve a tax rebate, collect 300");
+
+            Log.d("chance add 300", currentPlayer.getName() +
+                    String.valueOf(currentPlayer.getMoney()));
             currentPlayer.addMoney(300);
+            Log.d("chance add 300", currentPlayer.getName() +
+                    String.valueOf(currentPlayer.getMoney()));
         }
     }
 
     private void nextTurnRoll() {
+        Log.d("nextTurnRoll", "next player please roll");
         currentTurn++;
         if(currentTurn >= numPlayers){
             currentTurn = 0;
@@ -355,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     }
 
-    private void buyProperty(Player current, Square location) {
+    private void buyProperty(Player currentPlayer, Square location) {
         String method = "buyProperty";
         recognizedSpeech = (TextView) findViewById(R.id.recognizedSpeech);
         PropertySquare square = (PropertySquare)location;
@@ -363,13 +394,27 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         recognizedSpeech.setText("");
         if(square.getOwned()==true){
             convertTextToSpeech(square.getOwnedBy() + "call rent");
+            //rent is subtracted and added
+            currentPlayer.subtractMoney(100);
+            Log.d(method + "rent subtract money", currentPlayer.getName() +
+                    String.valueOf(currentPlayer.getMoney()));
+
+            String owner = square.getOwnedBy();
+            for(int i = 0; i<numPlayers; i++){
+                if(players.get(i).getName().equals(owner)){
+                    players.get(i).addMoney(100);
+                    Log.d(method + "rent add money", players.get(i).getName() +
+                            String.valueOf(players.get(i).getMoney()));
+
+                }
+            }
             nextTurnRoll();
 
         } else {
             int price = ((PropertySquare) location).getPrice();
             convertTextToSpeech("Would you like to buy" + square.getName() + "for"
                     + price);
-
+            Log.d(method, currentPlayer.getName() + String.valueOf(currentPlayer.getMoney()));
             while (tts.isSpeaking()) {
                 speech = null;
             }
@@ -419,6 +464,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public void onError(int errorCode) {
         String errorMessage = getErrorText(errorCode);
         Log.d("SRL", "FAILED " + errorMessage);
+        speech = SpeechRecognizer.createSpeechRecognizer(this);
+        speech.setRecognitionListener(this);
+        speech.startListening(getIntent());
     }
 
     @Override
@@ -452,6 +500,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             players.get(currentTurn).subtractMoney(square.getPrice());
             square.setOwnedBy(players.get(currentTurn).getName());
             Log.d("buyProperty yes", square.getOwnedBy());
+            Log.d("buyProperty yes", players.get(currentTurn).getName() +
+                    String.valueOf(players.get(currentTurn).getMoney()));
             convertTextToSpeech("You now own" + square.getName());
         }
         nextTurnRoll();
