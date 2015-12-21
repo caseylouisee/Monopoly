@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     int numPlayers;
     Board board;
     int jailCount;
+    int freeParking;
     private TextToSpeech tts;
 
     private SpeechRecognizer speech = null;
@@ -196,11 +197,30 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         } else if (location instanceof CardSquare) {
                             locationType.setText("Take a Card");
                             convertTextToSpeech("Take a card");
+                            String locName = location.getName();
+                            if(locName.equals("Chance")){
+                                chance(currentPlayer);
+                            } else {
+                                communityChest(currentPlayer);
+                            }
                             nextTurnRoll();
                         } else if (location instanceof SpecialSquare) {
                             locationType.setText("Landed on special square");
-                            checkJail(location, currentPlayer);
-                            convertTextToSpeech("Special square");
+                            String locName = location.getName();
+                            if(locName.equals("Go To Jail")){
+                                setJail(currentPlayer);
+                            } else if (locName.equals("Income Tax")){
+                                currentPlayer.subtractMoney(100);
+                                convertTextToSpeech("Income tax, 100 has been deducted from your funds");
+                                freeParking += 100;
+                            } else if (locName.equals("Jail")){
+                                convertTextToSpeech("Just visiting");
+                            } else if (locName.equals("Super Tax")){
+                                convertTextToSpeech("Super tax, 300 has been deducted from your funds");
+                                freeParking += 300;
+                            } else {
+                                convertTextToSpeech("Special square");
+                            }
                             nextTurnRoll();
                         }
                     }
@@ -209,11 +229,17 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
     };
 
-    private void checkJail(Square square, Player currentPlayer){
-        if(square.getName().equals("Go To Jail")){
-            currentPlayer.setCurrentPosition(10);
-            currentPlayer.setJail(true);
-        }
+    private void setJail(Player currentPlayer){
+        currentPlayer.setCurrentPosition(10);
+        currentPlayer.setJail(true);
+    }
+
+    private void chance(Player currentPlayer){
+
+    }
+
+    private void communityChest(Player currentPlayer){
+
     }
 
     private void nextTurnRoll() {
@@ -222,25 +248,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             currentTurn = 0;
         }
         convertTextToSpeech(players.get(currentTurn).getName() + "please roll the dice");
-
-//        Player currentPlayer = players.get(currentTurn);
-//        int pos = currentPlayer.getCurrentPosition();
-//        player = (TextView) findViewById(R.id.player);
-//        player.setText(currentPlayer.getName());
-//        currentPosition = (TextView) findViewById(R.id.currentPosition);
-//        currentPosition.setText("Position before dice roll " + pos + ", " +
-//                board.getSquare(pos).getName());
-//
-//        rollResult = (TextView) findViewById(R.id.rollResult);
-//        rollResult.setText("");
-//
-//        updatedPosition = (TextView) findViewById(R.id.updatedPosition);
-//        updatedPosition.setText("Updated Position:");
-//
-//        locationType = (TextView) findViewById(R.id.locationType);
-//        locationType.setText("");
-
-
     }
 
     @Override
