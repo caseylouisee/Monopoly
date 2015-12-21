@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     ArrayList<Player> players;
     int numPlayers;
     Board board;
-
+    int jailCount;
     private TextToSpeech tts;
 
     private SpeechRecognizer speech = null;
@@ -125,58 +125,87 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 @Override
                 public void run() {
                     String method = "onRoll";
-                    rollResult = (TextView) findViewById(R.id.rollResult);
-                    rollResult.setText(""+face);
-                    if(currentTurn >= numPlayers){
+
+
+                    if (currentTurn >= numPlayers) {
                         currentTurn = 0;
                     }
 
-                    Player current = players.get(currentTurn);
-                    int pos = current.getCurrentPosition();
+                    Player currentPlayer = players.get(currentTurn);
+                    int pos = currentPlayer.getCurrentPosition();
+                    rollResult = (TextView) findViewById(R.id.rollResult);
+                    rollResult.setText("" + face);
                     player = (TextView) findViewById(R.id.player);
-                    player.setText(current.getName());
-                    Log.d(method, "*****IT IS " + current.getName().toUpperCase() + "'S TURN*****");
+                    player.setText(currentPlayer.getName());
+                    Log.d(method, "*****IT IS " + currentPlayer.getName().toUpperCase() + "'S TURN*****");
                     Log.d(method, "Current Position:" + pos + ", " + board.getSquare(pos).getName());
 
                     currentPosition = (TextView) findViewById(R.id.currentPosition);
                     currentPosition.setText("Position before dice roll " + pos + ", " +
                             board.getSquare(pos).getName());
-                    convertTextToSpeech("Position before dice roll" + pos +
-                            board.getSquare(pos).getName());
 
-                    int newPos = pos+face;
-                    if(newPos >= 40){
-                        newPos = newPos-40;
-                    }
+                    if (currentPlayer.getJail() == true) {
+                        if (face == 6) {
+                            convertTextToSpeech("You rolled a" + face);
+                            convertTextToSpeech("You are now free, resume normal play on next turn");
+                            currentPlayer.setJail(false);
+                            nextTurnRoll();
+                        } else {
+                            convertTextToSpeech("You rolled a" + face);
+                            convertTextToSpeech("You did not roll a 6, serve your sentence");
+                            jailCount++;
+                            if(jailCount==3){
+                                currentPlayer.setJail(false);
+                                convertTextToSpeech("You have served your sentence. " +
+                                        "Resume normal play on next turn");
+                            }
+                            nextTurnRoll();
+                        }
+                    } else {
+                        convertTextToSpeech("Position before dice roll" + pos +
+                                board.getSquare(pos).getName());
 
-                    current.setCurrentPosition(newPos);
-                    convertTextToSpeech("You rolled a" + face);
+                        int newPos = pos + face;
+                        if (newPos >= 40) {
+                            newPos = newPos - 40;
+                        }
 
-                    updatedPosition = (TextView) findViewById(R.id.updatedPosition);
-                    updatedPosition.setText("Updated Position:" + newPos + ", " +
-                            board.getSquare(newPos).getName());
-                    convertTextToSpeech("Position after dice roll" + newPos +
-                            board.getSquare(newPos).getName());
+                        currentPlayer.setCurrentPosition(newPos);
+                        convertTextToSpeech("You rolled a" + face);
 
-                    locationType = (TextView) findViewById(R.id.locationType);
+                        updatedPosition = (TextView) findViewById(R.id.updatedPosition);
+                        updatedPosition.setText("Updated Position:" + newPos + ", " +
+                                board.getSquare(newPos).getName());
+                        convertTextToSpeech("Position after dice roll" + newPos +
+                                board.getSquare(newPos).getName());
 
-                    Square location = board.getSquare(newPos);
-                    //String posType = board.getSquare(newPos).getClass().getName();
-                    if(location instanceof PropertySquare){
-                        locationType.setText("Landed on property");
-                        buyProperty(current, location);
-                    } else if(location instanceof CardSquare){
-                        locationType.setText("Take a Card");
-                        nextTurnRoll();
-                    } else if(location instanceof SpecialSquare){
-                        locationType.setText("Landed on special square");
-                        nextTurnRoll();
+                        locationType = (TextView) findViewById(R.id.locationType);
+
+                        Square location = board.getSquare(newPos);
+                        //String posType = board.getSquare(newPos).getClass().getName();
+                        if (location instanceof PropertySquare) {
+                            locationType.setText("Landed on property");
+                            buyProperty(currentPlayer, location);
+                        } else if (location instanceof CardSquare) {
+                            locationType.setText("Take a Card");
+                            nextTurnRoll();
+                        } else if (location instanceof SpecialSquare) {
+                            locationType.setText("Landed on special square");
+                            checkJail(location, currentPlayer);
+                            nextTurnRoll();
+                        }
                     }
                 }
             });
         }
-
     };
+
+    private void checkJail(Square square, Player currentPlayer){
+        if(square.getName().equals("Go To Jail")){
+            currentPlayer.setCurrentPosition(10);
+            currentPlayer.setJail(true);
+        }
+    }
 
     private void nextTurnRoll() {
         currentTurn++;

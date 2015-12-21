@@ -8,6 +8,7 @@ public class Player {
     private final String name;
     private int currentPosition;
     private int money;
+    private Boolean jail = false;
 
     public Player (String name){
         this.name = name;
@@ -38,5 +39,13 @@ public class Player {
 
     public int getMoney() {
         return money;
+    }
+
+    public void setJail(Boolean bool){
+        jail = bool;
+    }
+
+    public Boolean getJail() {
+        return jail;
     }
 }
