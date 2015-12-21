@@ -7,7 +7,7 @@ public class Player {
 
     private final String name;
     private int currentPosition;
-    private int money;
+    private int money = 1500;
     private Boolean jail = false;
 
     public Player (String name){
