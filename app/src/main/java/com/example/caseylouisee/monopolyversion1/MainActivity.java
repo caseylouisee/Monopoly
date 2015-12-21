@@ -126,19 +126,25 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 public void run() {
                     String method = "onRoll";
 
-
-                    if (currentTurn >= numPlayers) {
-                        currentTurn = 0;
-                    }
-
                     Player currentPlayer = players.get(currentTurn);
                     int pos = currentPlayer.getCurrentPosition();
-                    rollResult = (TextView) findViewById(R.id.rollResult);
-                    rollResult.setText("" + face);
                     player = (TextView) findViewById(R.id.player);
                     player.setText(currentPlayer.getName());
                     Log.d(method, "*****IT IS " + currentPlayer.getName().toUpperCase() + "'S TURN*****");
                     Log.d(method, "Current Position:" + pos + ", " + board.getSquare(pos).getName());
+
+                    currentPosition = (TextView) findViewById(R.id.currentPosition);
+                    currentPosition.setText("Position before dice roll " + pos + ", " +
+                            board.getSquare(pos).getName());
+
+                    rollResult = (TextView) findViewById(R.id.rollResult);
+                    rollResult.setText("" + face);
+
+                    updatedPosition = (TextView) findViewById(R.id.updatedPosition);
+                    updatedPosition.setText("Updated Position:");
+
+                    locationType = (TextView) findViewById(R.id.locationType);
+                    locationType.setText("");
 
                     currentPosition = (TextView) findViewById(R.id.currentPosition);
                     currentPosition.setText("Position before dice roll " + pos + ", " +
@@ -171,11 +177,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         }
 
                         currentPlayer.setCurrentPosition(newPos);
-                        convertTextToSpeech("You rolled a" + face);
 
                         updatedPosition = (TextView) findViewById(R.id.updatedPosition);
                         updatedPosition.setText("Updated Position:" + newPos + ", " +
                                 board.getSquare(newPos).getName());
+                        convertTextToSpeech("You rolled a" + face);
+
                         convertTextToSpeech("Position after dice roll" + newPos +
                                 board.getSquare(newPos).getName());
 
@@ -188,10 +195,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                             buyProperty(currentPlayer, location);
                         } else if (location instanceof CardSquare) {
                             locationType.setText("Take a Card");
+                            convertTextToSpeech("Take a card");
                             nextTurnRoll();
                         } else if (location instanceof SpecialSquare) {
                             locationType.setText("Landed on special square");
                             checkJail(location, currentPlayer);
+                            convertTextToSpeech("Special square");
                             nextTurnRoll();
                         }
                     }
@@ -213,6 +222,24 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             currentTurn = 0;
         }
         convertTextToSpeech(players.get(currentTurn).getName() + "please roll the dice");
+
+//        Player currentPlayer = players.get(currentTurn);
+//        int pos = currentPlayer.getCurrentPosition();
+//        player = (TextView) findViewById(R.id.player);
+//        player.setText(currentPlayer.getName());
+//        currentPosition = (TextView) findViewById(R.id.currentPosition);
+//        currentPosition.setText("Position before dice roll " + pos + ", " +
+//                board.getSquare(pos).getName());
+//
+//        rollResult = (TextView) findViewById(R.id.rollResult);
+//        rollResult.setText("");
+//
+//        updatedPosition = (TextView) findViewById(R.id.updatedPosition);
+//        updatedPosition.setText("Updated Position:");
+//
+//        locationType = (TextView) findViewById(R.id.locationType);
+//        locationType.setText("");
+
 
     }
 
