@@ -6,15 +6,12 @@ import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
-import java.util.Scanner;
 
 import us.dicepl.android.sdk.BluetoothManipulator;
 import us.dicepl.android.sdk.DiceConnectionListener;
@@ -24,8 +21,6 @@ import us.dicepl.android.sdk.DiceResponseListener;
 import us.dicepl.android.sdk.DiceScanningListener;
 import us.dicepl.android.sdk.Die;
 import us.dicepl.android.sdk.responsedata.RollData;
-
-import static android.speech.SpeechRecognizer.createSpeechRecognizer;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, RecognitionListener {
 
