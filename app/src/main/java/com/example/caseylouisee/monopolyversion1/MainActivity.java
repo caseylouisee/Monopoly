@@ -277,6 +277,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void communityChest(Player currentPlayer){
         Random rand = new Random();
         int randomNum = rand.nextInt((3 - 1) + 1) + 1;
+        int nextPlayer;
+        if(currentTurn >= numPlayers){
+            nextPlayer = 0;
+        } else {
+            nextPlayer = currentTurn+1;
+        }
 
         if(randomNum == 1){
             convertTextToSpeech("Your new business takes off, collect 200");
@@ -299,11 +305,11 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             Log.d("chance add 100", currentPlayer.getName() +
                     String.valueOf(currentPlayer.getMoney()));
 
-            Log.d("chance subtract 100", players.get(currentTurn+1).getName() +
-                    String.valueOf(players.get(currentTurn+1).getMoney()));
-            players.get(currentTurn+1).subtractMoney(100);
-            Log.d("chance subtract 100", players.get(currentTurn + 1).getName() +
-                    String.valueOf(players.get(currentTurn + 1).getMoney()));
+            Log.d("chance subtract 100", players.get(nextPlayer).getName() +
+                    String.valueOf(players.get(nextPlayer).getMoney()));
+            players.get(nextPlayer).subtractMoney(100);
+            Log.d("chance subtract 100", players.get(nextPlayer).getName() +
+                    String.valueOf(players.get(nextPlayer).getMoney()));
         }
         if(randomNum == 3){
             convertTextToSpeech("You recieve a tax rebate, collect 300");
